@@ -1,0 +1,153 @@
+//// Learning Objective ////
+- เป็นแนวคิดในการสร้างโครงสร้างของเอกสาร วิธีนึง
+- ควรจะรู้วิธีการ ค้นหา และ เข้าถึง elementsใดๆ ในเอกสาร html 
+- สามารถเคลื่อนย้าย ลบ แก้ไข อัพเดท องค์ประกอบต่างๆของเอกสาร html ได้
+,สามารถที่จะรู้ว่า ถ้าเราสนใจองค์ประกอบไหน เราควรจะเข้าถึง อ่านค่า ปรับเปลี่ยนได้ แบบ dynamic
+
+-- DOM --
+- เป็นการวาดโครงสร้างของเอกสารออกมา ->เข้าใจวิธีการจัดการของเอกสาร
+- cupture ออกมาเป็นต้นไม้ DOMมองเอกสารในรูปแบบ hierarchical tree of nodes
+- Advantages -> ทำให้เราสามารถเข้าถึง node ใดๆได้ เพราะมันเห็นความสัมพันธ์ของต้นไม้ชัดเจน ว่าอันไหนเป็น root(ราก), node, nodeไหนมีลูก, ลูกมีparentเป็นใคร
+- Disadvantages -> ถ้าเอกสารของ html ที่เรากำลังจะอ่านมันใหญ่ แล้วหน่วยความจำเราน้อย มันจะbuild tree ออกมาไม่ได้ มันต้องค่อยๆอ่าน
+
+-เมื่อหน้าเว็บเริ่มทำงาน browserจะสร้าง DOM Tree ขึ้นจาก HTML ที่เราเขียน
+เช่น <html>, <body>, <p> จะถูกแปลงเป็น Node ทั้งหมด
+- document object เป็นroot node ของเอกสาร HTML และทุกอย่างภายใน 
+เช่น element nodes, text nodes, attribute nodes, comment nodes ล้วนเป็นchild nodes
+- node แต่ละประเภทมีลักษณะแตกต่างกัน มีdata, methods และเวลาที่node มาประกอบกัน เริ่มทำให้เรามองเห็นเป็นลำดับชั้นผ่านตัวคสพของแต่ละอัน 
+
+-- Ex. DOM Tree --
+- HTML -
+<!-- root node/document node (logical node) -->
+<head>
+<!DOCTYPE html>
+<html lang="en"> <!-- root element/document element -->
+<head> 
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Dom Example</h1>
+    </div>
+    <div>
+        <p>#1</p>
+        <p>#2</p>
+    </div>
+</body>
+    <script src="main.js"></script>
+</html>
+
+
+- tree จาก html -
+
+Document (root node) => Top node (node เทียม) สร้างขค้นมาเพื่อควบคุม node ทั้งหมดในเอกสาร
+│
+└── html <lang="en"> (root element/document element)  => html ถือเป็น element แรกในเอกสาร
+    │
+    ├── head (element node)
+    │   └── title (element node)
+    │       └── "Document" (Text Node)
+    │
+    └── body (element node)
+        │
+        ├── div (element node)
+        │   └── h1 (element node)
+        │       └── "Dom Example"  (Text Node)
+        │
+        ├── div (element node)
+        │   ├── p (element node)
+        │   │   └── "#1"  (Text Node)
+        │   └── p (element node)
+        │       └── "#2"  (Text Node)
+        │
+        └── script (attribute node) <src="main.js">
+
+
+ประเภท node
+1.Document_type node. => คือ <!DOCTYPE html>
+2.root node => node แรกสุดของเอกสาร html
+3.element Node
+4.text node
+5.comment node
+6.attribute node
+
+
+** การเรียก element
+<p> xxx </p> => แท็กเปิดจนถึงแท็กปิด ทั้งหมดเรียก 1 [element node]
+             => xxx เรียก [text node]
+             => มี id="p123"/ style/ class เรียก [attribute node]
+
+
+-- Document Chilren --
+// const html1=document.documentElement
+// const firstNode=document.firstChild
+// const firstElementChildNode=document.firstElementChildNode
+// const lastNode= document.lastChild
+// const lastElementChildNode=document.lastElementChild
+
+// console.log(document);
+// console.log(html1);
+// console.log(firstNode);
+// console.log(firstElementChildNode);
+// console.log(lastNode);
+// console.log(lastElementChildNode);
+
+-- Node Types --
+if (document.body.nodeType === Node.ELEMENT_NODE) 
+  console.log(`body is an element node type`)     => จริง ๆ แล้วคือกำลังตรวจว่า document.body.nodeType === 1
+if (document.body.nodeType === Node.ATTRIBUTE_NODE)
+  console.log(`body is an attribute node type`) 
+if (document.body.nodeType === Node.TEXT_NODE)
+  console.log(`body is a text node type`)
+
+จากตัวอย่าง
+//document.body.nodeType = property ที่บอกว่าโหนดนั้นเป็นชนิดใด โดยคืนค่าเป็นตัวเลข เช่น
+1 → ELEMENT_NODE
+2 → ATTRIBUTE_NODE
+3 → TEXT_NODE
+//console ของ output => body is an element node type
+เพราะ <body> เป็น Element Node ค่าnodeType = 1
+ส่วนสองเงื่อนไขถัดไป ATTRIBUTE_NODE, TEXT_NODE จะไม่เป็นจริง
+
+
+-The nodeName, nodeType, nodeValue properties-
+
+ //query div element with id "exampleElement"
+const divElement = document.getElementById('exampleElement')  => ดึงelement ที่มี id="exampleElement" จากหน้าHTML 
+ //div childNodes 
+const divChildNodes = divElement.childNodes //return NodeList data type =>childNodes คืนค่าทุกโหนดที่อยู่ภายใน <div>
+console.log(`length: ${divElement.childNodes.length}`);
+divChildNodes.forEach((child) => {
+console.log(child.nodeName)
+console.log(child.nodeType)
+console.log(child.nodeValue)
+})
+
+// div children
+const divChildren = divElement.children //return HTMLCollection data type
+console.log(`length: ${divElement.children.length}`);  => children คืนเฉพาะ element node เท่านั้น (ไม่รวม text node และ comment node)
+Array.from(divChildren).forEach((child) => {
+    console.log(child.nodeName);
+    console.log(child.nodeType);
+    console.log(child.nodeValue);
+})
+
+**
+- childNodes -> return NodeList data type  คืนทุกโหนด รวม text และ comment
+1.nodelist เป็น static 
+2.nodelist มี forEach ให้เราเลือกใช้ แต่ถ้าจะทำเป็น array ต้องเข้า Array.from 
+
+- children -> return HTMLCollection data  คืนเฉพาะ element node
+1.เป็น dynamic 
+2.html collection ไม่มี forEach -> อะไรที่ return เป็น html collection ต้องแปลงเป็น Array.from ก่อน แล้วค่อยใช้ forEach
+
+- ใช้ Array.from() แปลง HTMLCollection ให้ใช้ .forEach() ได้
+- nodeName, nodeType, nodeValue ช่วยให้เรารู้ว่าภายใน <div> มีอะไรบ้าง
+
+-- Element --
+> เวลาสร้างต้องสร้างผ่าน document
+> ต้องส่ง argument เป็นชื่อแท็ก [tag name] เช่น <div>, <p>, <img>
+
+-- Attr --
+- Attr node ใน DOM ไม่เป็นpart of the document tree -> attribute node ไม่มี ใน node tree 
+- ค่า parentNode, previousSibling, nextSibling ของมันจะเป็น null
